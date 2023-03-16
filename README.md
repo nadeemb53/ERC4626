@@ -1,6 +1,6 @@
 ## ERC4626
 
-`ERC4626` is a solidity contract that allows users to stake a token (`TokenA`) and earn rewards in another token (`RewardToken`) over time.
+`ERC4626` is a solidity contract that allows users to stake a token (`TokenA`) and earn rewards in another token (`RewardToken`) over time. They receive X amount of `VaultTokens` based on their deposit, which they can burn on withdrawal.
 
 #### Usage
 
@@ -19,8 +19,6 @@ npm install
 npx hardhat test
 ```
 
-The test suite includes tests for depositing rewards, staking and withdrawing token A, claiming earned rewards and handling edge cases.
+The test suite includes a simulation of a scenario and tests for depositing rewards, staking and withdrawing token A, claiming earned rewards and handling edge cases.
 
-#### Contributing
-
-This is part of an assignment exercise. Contributions are not welcome. 
+![Passing tests image](https://i.imgur.com/ca1du99.png)

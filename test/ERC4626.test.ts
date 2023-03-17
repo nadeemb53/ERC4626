@@ -8,6 +8,7 @@ describe("ERC4626", function () {
   let tokenA: Contract;
   let vaultToken: Contract;
   let erc4626: Contract;
+  const precision = 100;
 
   beforeEach(async function () {
     accounts = await ethers.getSigners();
@@ -68,7 +69,9 @@ describe("ERC4626", function () {
     }
 
     // check earned rewards
-    expect(await erc4626.earned(await accounts[1].getAddress())).to.equal(10);
+    expect(
+      (await erc4626.earned(await accounts[1].getAddress())) / precision
+    ).to.equal(10);
 
     // withdraw token A and claim rewards
     await vaultToken.connect(accounts[1]).approve(erc4626.address, 100);
@@ -80,7 +83,7 @@ describe("ERC4626", function () {
       100
     );
     expect(
-      await rewardToken.balanceOf(await accounts[1].getAddress())
+      (await rewardToken.balanceOf(await accounts[1].getAddress())) / precision
     ).to.equal(12);
   });
 
@@ -127,16 +130,20 @@ describe("ERC4626", function () {
     }
 
     // check earned rewards
-    expect(await erc4626.earned(await accounts[1].getAddress())).to.equal(10);
+    expect(
+      (await erc4626.earned(await accounts[1].getAddress())) / precision
+    ).to.equal(10);
 
     // claim rewards
     await erc4626.connect(accounts[1]).getReward();
 
     // check reward balance and contract balance
     expect(
-      await rewardToken.balanceOf(await accounts[1].getAddress())
+      (await rewardToken.balanceOf(await accounts[1].getAddress())) / precision
     ).to.equal(11);
-    expect(await rewardToken.balanceOf(erc4626.address)).to.equal(999989);
+    expect((await rewardToken.balanceOf(erc4626.address)) / precision).to.equal(
+      9989
+    );
   });
 
   it("should handle edge cases correctly", async function () {

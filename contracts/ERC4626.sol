@@ -3,11 +3,13 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Tokens.sol";
 
 contract ERC4626 is Ownable {
     using SafeERC20 for IERC20;
+    using SafeMath for uint256;
 
     IERC20 public rewardToken;
     IERC20 public tokenA;
@@ -37,7 +39,7 @@ contract ERC4626 is Ownable {
         tokenA = IERC20(_tokenA);
         vaultToken = VaultToken(_vaultToken);
         vaultTokenMultiplier = _vaultTokenMultiplier;
-        rewardPerBlock = _rewardPerBlock;
+        rewardPerBlock = _rewardPerBlock * 100;
         lastUpdateBlock = block.number;
     }
 
@@ -98,16 +100,24 @@ contract ERC4626 is Ownable {
             return rewardPerTokenStored;
         }
         return
-            rewardPerTokenStored +
-            (((block.number - lastUpdateBlock) * rewardPerBlock * 1e18) /
-                totalStaked);
+            rewardPerTokenStored.add(
+                (
+                    (block.number.sub(lastUpdateBlock)).mul(rewardPerBlock).mul(
+                        1e18
+                    )
+                ).div(totalStaked)
+            );
     }
 
     function earned(address account) public view returns (uint256) {
         return
-            ((staked[account] *
-                (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) +
-            rewards[account];
+            (
+                (
+                    staked[account].mul(
+                        rewardPerToken().sub(userRewardPerTokenPaid[account])
+                    )
+                ).div(1e18)
+            ).add(rewards[account]);
     }
 
     function refreshRewards() public updateReward(msg.sender) {}

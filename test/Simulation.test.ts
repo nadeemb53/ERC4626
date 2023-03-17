@@ -8,6 +8,7 @@ describe("Simulate three users staking scenario", () => {
   let tokenA: Contract;
   let vaultToken: Contract;
   let erc4626: Contract;
+  const precision = 100;
 
   it("should do initial setup for simulation", async () => {
     accounts = await ethers.getSigners();
@@ -78,7 +79,9 @@ describe("Simulate three users staking scenario", () => {
       await ethers.provider.send("evm_mine", []);
     }
     // user 2 checks earned rewards
-    expect(await erc4626.earned(await accounts[2].getAddress())).to.equal(66);
+    expect(
+      (await erc4626.earned(await accounts[2].getAddress())) / precision
+    ).to.equal(66.66);
   });
 
   it("should let User 1 withdraw their deposit and check if their vault tokens are burnt", async () => {
@@ -95,7 +98,7 @@ describe("Simulate three users staking scenario", () => {
     await erc4626.connect(accounts[1]).getReward();
 
     expect(
-      await rewardToken.balanceOf(await accounts[1].getAddress())
+      (await rewardToken.balanceOf(await accounts[1].getAddress())) / precision
     ).to.equal(35); // fix this
   });
 
@@ -105,7 +108,9 @@ describe("Simulate three users staking scenario", () => {
       await ethers.provider.send("evm_mine", []);
     }
     // user 2 checks earned rewards
-    expect(await erc4626.earned(await accounts[2].getAddress())).to.equal(169);
+    expect(
+      (await erc4626.earned(await accounts[2].getAddress())) / precision
+    ).to.equal(169);
   });
 
   it("should let User 3 deposit 100 tokens and receive 100 vault tokens", async () => {
@@ -121,8 +126,12 @@ describe("Simulate three users staking scenario", () => {
       await ethers.provider.send("evm_mine", []);
     }
     // user 2 checks earned rewards
-    expect(await erc4626.earned(await accounts[2].getAddress())).to.equal(236);
+    expect(
+      (await erc4626.earned(await accounts[2].getAddress())) / precision
+    ).to.equal(236.66);
     // user 3 checks earned rewards
-    expect(await erc4626.earned(await accounts[3].getAddress())).to.equal(33);
+    expect(
+      (await erc4626.earned(await accounts[3].getAddress())) / precision
+    ).to.equal(33.33);
   });
 });
